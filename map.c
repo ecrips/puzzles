@@ -18,6 +18,8 @@
 
 #include "puzzles.h"
 
+#define VIVID_COLOURS
+
 /*
  * In standalone solver mode, `verbose' is a variable which can be
  * set by command-line option; in debugging mode it's simply always
