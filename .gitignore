@@ -1,5 +1,7 @@
 *.swp
+*.o
 Makefile*
 list.c
 tags
 wingames.lst
+Puzzles.js

@@ -5,6 +5,13 @@
 extern const game *gamelist[];
 extern const int gamecount;
 
+/* Defined in JS */
+void init_colour(int,int,int,int);
+void canvas_text(int,int,int,int,char*,char*,int,char*);
+void canvas_rect(int,int,int,int,int);
+void set_canvas_size(int,int);
+void canvas_circle(int,int,int,int,int);
+
 struct frontend
 {
 	midend *me;
@@ -16,12 +23,24 @@ struct frontend
 static void em_draw_text(void *handle, int x, int y, int fonttype, int fontsize,
 	int align, int colour, char *text)
 {
-	printf("TODO: draw text '%s'\n",text);
+	char *alignstr = "start";
+	char *valignstr = "alphabetic";
+	switch(align) {
+		case ALIGN_VCENTRE | ALIGN_HCENTRE:
+			alignstr = "center";
+			valignstr = "middle";
+			y += fontsize/10; /* HACK */
+			break;
+		default:
+			printf("Unknown text alignment (%d)\n", align);
+	}
+	canvas_text(x, y, fonttype == FONT_FIXED, fontsize,
+		alignstr, valignstr, colour, text);
 }
 
 static void em_draw_rect(void *handle, int x, int y, int w, int h, int colour)
 {
-	printf("TODO: draw rect\n");
+	canvas_rect(x, y, w, h, colour);
 }
 
 static void em_draw_line(void *hande, int x1, int y1, int x2, int y2,
@@ -39,12 +58,11 @@ static void em_draw_polygon(void *handle, int *coords, int npoints,
 static void em_draw_circle(void *handle, int cx, int cy, int radius,
 			int fillcolour, int outlinecolour)
 {
-	printf("TODO: draw circle\n");
+	canvas_circle(cx, cy, radius, fillcolour, outlinecolour);
 }
 
 static void em_draw_update(void *handle, int x, int y, int w, int h)
 {
-	printf("TODO: draw update\n");
 }
 
 static void em_clip(void *handle, int x, int y, int w, int h)
@@ -59,12 +77,10 @@ static void em_unclip(void *handle)
 
 static void em_start_draw(void *handle)
 {
-	printf("TODO: start draw\n");
 }
 
 static void em_end_draw(void *handle)
 {
-	printf("TODO: end draw\n");
 }
 
 static void em_status_bar(void *handle, char *text)
@@ -193,6 +209,26 @@ static const game *pick_game(void)
 	return gamelist[0];
 }
 
+void frontend_default_colour(frontend *fe, float *output)
+{
+	output[0] = 1;
+	output[1] = 1;
+	output[2] = 1;
+}
+
+void snaffle_colours(frontend *fe)
+{
+	int ncolours, i;
+	float *colours;
+
+	colours = midend_colours(fe->me, &ncolours);
+	for(i=0; i<ncolours; i++) {
+		init_colour(i, 	colours[i*3]*0xFF,
+				colours[i*3+1]*0xFF,
+				colours[i*3+2]*0xFF);
+	}
+}
+
 void em_puzzle_init(void)
 {
 	int x = 1024,y = 1024;
@@ -202,11 +238,15 @@ void em_puzzle_init(void)
 
 	fe->game = pick_game();
 
-	fe->me = midend_new(fe, fe->game, &drapi, NULL);
+	fe->me = midend_new(fe, fe->game, &drapi, fe);
 
 	midend_new_game(fe->me);
 
+	snaffle_colours(fe);
+
 	midend_size(fe->me, &x, &y, 0);
+
+	set_canvas_size(x,y);
 
 	midend_redraw(fe->me);
 }
