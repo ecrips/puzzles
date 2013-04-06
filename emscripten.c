@@ -211,6 +211,20 @@ static const game *pick_game(void)
 	return gamelist[0];
 }
 
+static void pick_preset(void)
+{
+	int num = midend_num_presets(fe->me);
+	int i;
+	for(i=0;i<num;i++) {
+		char *name;
+		game_params *params;
+		midend_fetch_preset(fe->me, i, &name, &params);
+		if (!strcmp(name, "15x15 medium")) {
+			midend_set_params(fe->me, params);
+		}
+	}
+}
+
 void frontend_default_colour(frontend *fe, float *output)
 {
 	output[0] = 1;
@@ -241,6 +255,8 @@ void em_puzzle_init(void)
 	fe->game = pick_game();
 
 	fe->me = midend_new(fe, fe->game, &drapi, fe);
+
+	pick_preset();
 
 	midend_new_game(fe->me);
 

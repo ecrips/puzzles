@@ -1678,9 +1678,9 @@ if (defined $makefiles{'emscripten'}) {
       ($prog, $type) = split ",", $p;
       $objstr = &objects($p, "X.o", undef, undef);
       $objstr =~ s/osx\.o/emscripten\.o/;
-      print &splitline("\$(BINPREFIX)" . $prog . ".js: emscripten.js " . $objstr), "\n";
+      print &splitline("\$(BINPREFIX)" . $prog . ".js: emscripten.js emscripten-pre.js " . $objstr), "\n";
       $libstr = &objects($p, undef, undef, "-lX");
-      print &splitline("\t\$(CC) -o \$@ $objstr $libstr --jcache --post-js emscripten.js -O2", 69),
+      print &splitline("\t\$(CC) -o \$@ $objstr $libstr --jcache --post-js emscripten.js --pre-js emscripten-pre.js -O2", 69),
 	  "\n\n";
     }
     foreach $d (&deps("X.o", undef, $dirpfx, "/")) {
