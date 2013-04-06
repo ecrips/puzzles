@@ -4,8 +4,11 @@
 
 extern const game *gamelist[];
 extern const int gamecount;
+extern frontend *fe;
 
 /* Defined in JS */
+int get_width(void);
+int get_height(void);
 void init_colour(int,int,int,int);
 void canvas_text(int,int,int,int,char*,char*,int,char*);
 void canvas_rect(int,int,int,int,int);
@@ -29,7 +32,6 @@ static void em_draw_text(void *handle, int x, int y, int fonttype, int fontsize,
 		case ALIGN_VCENTRE | ALIGN_HCENTRE:
 			alignstr = "center";
 			valignstr = "middle";
-			y += fontsize/10; /* HACK */
 			break;
 		default:
 			printf("Unknown text alignment (%d)\n", align);
@@ -231,8 +233,8 @@ void snaffle_colours(frontend *fe)
 
 void em_puzzle_init(void)
 {
-	int x = 1024,y = 1024;
-	frontend *fe = snew(frontend);
+	int x = get_width(),y = get_height();
+	fe = snew(frontend);
 
 	memset(fe, 0, sizeof(*fe));
 
@@ -244,7 +246,7 @@ void em_puzzle_init(void)
 
 	snaffle_colours(fe);
 
-	midend_size(fe->me, &x, &y, 0);
+	midend_size(fe->me, &x, &y, 1);
 
 	set_canvas_size(x,y);
 
@@ -262,4 +264,51 @@ void get_random_seed(void **randseed, int *randseedsize)
 void deactivate_timer(frontend *fe)
 {
 	fe->timer_active = 0;
+}
+
+static int button_drag_down = 0;
+
+void em_mousedown(int x, int y, int which)
+{
+	int button = 0;
+	static const int button_down[] = {
+		LEFT_BUTTON, MIDDLE_BUTTON, RIGHT_BUTTON
+	};
+	static const int button_drag[] = {
+		LEFT_DRAG, MIDDLE_DRAG, RIGHT_DRAG
+	};
+
+	if (which < 3 && which >= 0) {
+		button = button_down[which];
+		button_drag_down = button_drag[which];
+	} else
+		return;
+	midend_process_key(fe->me, x, y, button);
+}
+
+void em_mousemove(int x, int y)
+{
+	if (button_drag_down) {
+		midend_process_key(fe->me, x, y, button_drag_down);
+	}
+}
+
+void em_mouseup(int x, int y, int which)
+{
+	int button = 0;
+	static const int button_up[] = {
+		LEFT_RELEASE, MIDDLE_RELEASE, RIGHT_RELEASE
+	};
+	if (which < 3 && which >= 0) {
+		button = button_up[which];
+	} else
+		return;
+	midend_process_key(fe->me, x, y, button);
+	button_drag_down = 0;
+}
+
+void do_timer(int t)
+{
+	float tplus = t/1000.f;
+	midend_timer(fe->me, tplus);
 }
