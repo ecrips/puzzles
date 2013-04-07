@@ -209,6 +209,7 @@ static const game *pick_game(void)
 	return gamelist[0];
 }
 
+/*
 static void pick_preset(void)
 {
 	int num = midend_num_presets(fe->me);
@@ -221,6 +222,40 @@ static void pick_preset(void)
 			midend_set_params(fe->me, params);
 		}
 	}
+}
+*/
+
+void populate_type_menu()
+{
+	void c_callback(char *name,int id,int sel);
+	int num = midend_num_presets(fe->me);
+	int i;
+	int sel = midend_which_preset(fe->me);
+	for(i=0;i<num;i++) {
+		char *name;
+		game_params *params;
+		midend_fetch_preset(fe->me, i, &name, &params);
+		c_callback(name, i, i==sel);
+	}
+}
+
+void em_new_game(void)
+{
+	int x = get_width(),y = get_height();
+	midend_new_game(fe->me);
+	midend_size(fe->me, &x, &y, 1);
+	set_canvas_size(x,y);
+	midend_redraw(fe->me);
+}
+
+void set_preset(int i)
+{
+	char *name;
+	game_params *params;
+	midend_fetch_preset(fe->me, i, &name, &params);
+	midend_set_params(fe->me, params);
+
+	em_new_game();
 }
 
 void frontend_default_colour(frontend *fe, float *output)
@@ -245,7 +280,6 @@ void snaffle_colours(frontend *fe)
 
 void em_puzzle_init(void)
 {
-	int x = get_width(),y = get_height();
 	fe = snew(frontend);
 
 	memset(fe, 0, sizeof(*fe));
@@ -254,17 +288,10 @@ void em_puzzle_init(void)
 
 	fe->me = midend_new(fe, fe->game, &drapi, fe);
 
-	pick_preset();
-
-	midend_new_game(fe->me);
-
 	snaffle_colours(fe);
 
-	midend_size(fe->me, &x, &y, 1);
-
-	set_canvas_size(x,y);
-
-	midend_redraw(fe->me);
+	/*pick_preset();*/
+	em_new_game();
 }
 
 void get_random_seed(void **randseed, int *randseedsize)
