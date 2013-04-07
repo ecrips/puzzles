@@ -19,8 +19,6 @@ struct frontend
 {
 	midend *me;
 	const game *game;
-
-	int timer_active;
 };
 
 static void em_draw_text(void *handle, int x, int y, int fonttype, int fontsize,
@@ -275,11 +273,6 @@ void get_random_seed(void **randseed, int *randseedsize)
 	*r = emscripten_random();
 	*randseed = r;
 	*randseedsize = sizeof(float);
-}
-
-void deactivate_timer(frontend *fe)
-{
-	fe->timer_active = 0;
 }
 
 static int button_drag_down = 0;

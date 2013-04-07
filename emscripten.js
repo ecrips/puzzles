@@ -112,8 +112,10 @@ function _activate_timer()
 function _deactivate_timer()
 {
 	timer_active = false;
-}
 
+}
 window['em'] = {
 	'puzzle_init' : puzzle_init
 };
+
+})();

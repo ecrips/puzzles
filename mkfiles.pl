@@ -1667,7 +1667,7 @@ if (defined $makefiles{'emscripten'}) {
     "TOOLPATH := ../emscripten/\n".
     "CC := \$(TOOLPATH)emcc\n".
     "\n".
-    &splitline("CFLAGS := -Wall -Werror -ansi -pedantic -g " .
+    &splitline("CFLAGS := -Wall -Werror -ansi -pedantic " .
 	       (join " ", map {"-I$dirpfx$_"} @srcdirs) .
 	       " \$(CFLAGS)")."\n".
     "\n";
