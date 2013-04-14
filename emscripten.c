@@ -14,6 +14,16 @@ void canvas_text(int,int,int,int,char*,char*,int,char*);
 void canvas_rect(int,int,int,int,int);
 void set_canvas_size(int,int);
 void canvas_circle(int,int,int,int,int);
+void canvas_blitter_save(int,int,int,int,int);
+void canvas_blitter_load(int,int,int);
+void canvas_blitter_free(int);
+void canvas_clip(int,int,int,int);
+void canvas_unclip(void);
+void canvas_beginPath(void);
+void canvas_moveTo(int,int);
+void canvas_lineTo(int,int);
+void canvas_strokeandfill(int,int);
+int is_selected_game(const char*);
 
 struct frontend
 {
@@ -52,7 +62,13 @@ static void em_draw_line(void *hande, int x1, int y1, int x2, int y2,
 static void em_draw_polygon(void *handle, int *coords, int npoints,
 			int fillcolour, int outlinecolour)
 {
-	printf("TODO: draw polygon\n");
+	int i;
+	canvas_beginPath();
+	canvas_moveTo(coords[0], coords[1]);
+	for(i=1;i<npoints;i++) {
+		canvas_lineTo(coords[i*2], coords[i*2+1]);
+	}
+	canvas_strokeandfill(fillcolour, outlinecolour);
 }
 
 static void em_draw_circle(void *handle, int cx, int cy, int radius,
@@ -67,12 +83,12 @@ static void em_draw_update(void *handle, int x, int y, int w, int h)
 
 static void em_clip(void *handle, int x, int y, int w, int h)
 {
-	printf("TODO: clip\n");
+	canvas_clip(x, y, w, h);
 }
 
 static void em_unclip(void *handle)
 {
-	printf("TODO: unclip\n");
+	canvas_unclip();
 }
 
 static void em_start_draw(void *handle)
@@ -90,29 +106,38 @@ static void em_status_bar(void *handle, char *text)
 
 struct blitter
 {
-	int dummy;
+	int id;
+	int x, y, w, h;
 };
 
 static blitter *em_blitter_new(void *handle, int w, int h)
 {
-	printf("TODO: blitter new\n");
-	return snew(blitter);
+	struct blitter *b = snew(blitter);
+	b->w = w;
+	b->h = h;
+	b->id = (int)b;
+	return b;
 }
 
 static void em_blitter_free(void *handle, blitter *bl)
 {
-	printf("TODO: blitter free\n");
+	canvas_blitter_free(bl->id);
 	sfree(bl);
 }
 
 static void em_blitter_save(void *handle, blitter *bl, int x, int y)
 {
-	printf("TODO: blitter save\n");
+	canvas_blitter_save(bl->id, x, y, bl->w, bl->h);
+	bl->x = x;
+	bl->y = y;
 }
 
 static void em_blitter_load(void *handle, blitter *bl, int x, int y)
 {
-	printf("TODO: blitter load\n");
+	if (x == BLITTER_FROMSAVED && y == BLITTER_FROMSAVED) {
+		x = bl->x; y = bl->y;
+	}
+	canvas_blitter_load(bl->id, x, y);
 }
 
 static void em_begin_doc(void *handle, int pages)
@@ -202,7 +227,7 @@ static const game *pick_game(void)
 {
 	int i;
 	for(i=0;i<gamecount;i++) {
-		if (!strcmp(gamelist[i]->name, "Bridges")) {
+		if (is_selected_game(gamelist[i]->name)) {
 			return gamelist[i];
 		}
 	}

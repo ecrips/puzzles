@@ -91,6 +91,15 @@ function puzzle_init() {
 	setup_menu();
 }
 
+function _is_selected_game(game) {
+	game = Pointer_stringify(game);
+	var hash = location.hash;
+	if ("#"+game == hash) {
+		return true;
+	}
+	return false;
+}
+
 function _init_colour(id, r, g, b)
 {
 	colourStyle[id] = "rgb("+r+","+g+","+b+")";
@@ -147,6 +156,70 @@ function _canvas_circle(x, y, radius, fillcolour, outlinecolour)
 	ctx.fill();
 }
 
+var blitters = [];
+
+function _canvas_blitter_save(id, x, y, w, h)
+{
+	var imagedata = ctx.getImageData(x, y, w, h);
+	blitters[id] = imagedata;
+}
+
+function _canvas_blitter_load(id, x, y)
+{
+	ctx.putImageData(blitters[id], x, y);
+}
+
+function _canvas_blitter_free(id)
+{
+	blitters[id] = 0;
+	delete blitters[id];
+}
+
+function _canvas_clip(x, y, w, h)
+{
+	ctx.save();
+	ctx.beginPath();
+	ctx.rect(x,y,w,h);
+	ctx.clip();
+}
+
+function _canvas_unclip()
+{
+	ctx.restore();
+	/*
+	ctx.beginPath();
+	ctx.rect(0,0,thecanvas.width,thecanvas.height);
+	ctx.clip();
+	*/
+	//ctx.resetClip();
+}
+
+function _canvas_beginPath()
+{
+	ctx.beginPath();
+}
+
+function _canvas_moveTo(x, y)
+{
+	ctx.moveTo(x,y);
+}
+
+function _canvas_lineTo(x, y)
+{
+	ctx.lineTo(x,y);
+}
+
+function _canvas_strokeandfill(fillcolour, outlinecolour)
+{
+	ctx.closePath();
+	ctx.strokeStyle = colourStyle[outlinecolour];
+	ctx.stroke();
+	if (fillcolour != -1) {
+		ctx.fillStyle = colourStyle[fillcolour];
+		ctx.fill();
+	}
+}
+
 var timer_active = false;
 var timer_last;
 
@@ -175,7 +248,7 @@ function _deactivate_timer()
 
 }
 window['em'] = {
-	'puzzle_init' : puzzle_init,
+	'puzzle_init' : puzzle_init
 };
 
 }).call({});

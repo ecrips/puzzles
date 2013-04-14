@@ -1,9 +1,9 @@
 "use strict";
 
 if (!window.Float64Array) {
-	window.Float64Array = Float32Array;
+	window.Float64Array = window.Float32Array;
 }
 
-var Module = {};
-
 (function(){
+
+var Module = {};
