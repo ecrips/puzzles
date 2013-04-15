@@ -1671,8 +1671,8 @@ if (defined $makefiles{'emscripten'}) {
 	       (join " ", map {"-I$dirpfx$_"} @srcdirs) .
 	       " \$(CFLAGS)")."\n".
     "\n";
-    print &splitline("all:" . join "", map { " \$(BINPREFIX)$_.js" }
-                     &progrealnames("MX"));
+    print &splitline("all:" . (join "", map { " \$(BINPREFIX)$_.js" }
+                     &progrealnames("MX")) . " cache.manifest");
     print "\n\n";
     foreach $p (&prognames("MX")) {
       ($prog, $type) = split ",", $p;
@@ -1695,6 +1695,10 @@ if (defined $makefiles{'emscripten'}) {
 	  " -c \$< -o \$\@\n";
     }
 
+    print "cache.manifest: puzzle.html Puzzles.js web-icons/*.png\n";
+    print "\techo CACHE MANIFEST > cache.new\n";
+    print "\t".'md5sum $+ | sed "s/\(.*\) \(.*\)/\2 # \1/" >> cache.new'."\n";
+    print "\tmv cache.new cache.manifest\n";
     print "\n";
     print $makefile_extra{'emscripten'} || "";
     print "\nclean:\n".

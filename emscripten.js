@@ -30,7 +30,7 @@ function mouseup(e) {
 	return false;
 }
 
-function choose_type() {
+function do_menu(callback, populate) {
 	var menu = document.createElement("div");
 	menu.className = "ontopmenu";
 	var list = document.createElement("div");
@@ -44,24 +44,10 @@ function choose_type() {
 		}
 	}
 
-	set_callback(function(name, i, sel) {
-		name = Pointer_stringify(name);
-		var div = document.createElement("div");
-		var radio = document.createElement("input");
-		radio.type = "radio";
-		radio.name = 'type';
-		if (sel) radio.checked = true;
-		var label = document.createElement("label");
-		label.appendChild(radio);
-		label.appendChild(document.createTextNode(name));
-		div.appendChild(label);
-		list.appendChild(div);
-		label.onclick = function() {
-			hide_menu();
-			_set_preset(i);
-		}
-	});
-	_populate_type_menu();
+	var o = {list: list, hide_menu: hide_menu};
+
+	set_callback(callback.bind(o));
+	populate();
 
 	document.body.appendChild(menu);
 	menu.tabIndex = 100;
@@ -73,11 +59,60 @@ function choose_type() {
 	}
 }
 
+function choose_game() {
+	do_menu(function(name, i) {
+		var hide_menu = this.hide_menu;
+		name = Pointer_stringify(name);
+		var div = document.createElement("div");
+		var radio = document.createElement("input");
+		radio.type = "radio";
+		radio.name = 'game';
+		var label = document.createElement("label");
+		var img = document.createElement("img");
+		img.src = "web-icons/"+name+".png";
+		label.appendChild(img);
+		label.appendChild(radio);
+		label.appendChild(document.createTextNode(name));
+		div.appendChild(label);
+		this.list.appendChild(div);
+		label.onclick = function() {
+			hide_menu();
+			location.hash = name;
+			_change_game(i);
+		};
+	}, _populate_game_menu);
+}
+
+function choose_type() {
+	do_menu(function(name, i, sel) {
+		var hide_menu = this.hide_menu;
+		name = Pointer_stringify(name);
+		var div = document.createElement("div");
+		var radio = document.createElement("input");
+		radio.type = "radio";
+		radio.name = 'type';
+		if (sel) radio.checked = true;
+		var label = document.createElement("label");
+		label.appendChild(radio);
+		label.appendChild(document.createTextNode(name));
+		div.appendChild(label);
+		this.list.appendChild(div);
+		label.onclick = function() {
+			hide_menu();
+			_set_preset(i);
+		};
+	}, _populate_type_menu);
+}
+
 function setup_menu() {
 	var menu = document.getElementById("menu");
+	var gamemenu = document.createElement("button");
 	var typemenu = document.createElement("button");
+	gamemenu.appendChild(document.createTextNode("Game"));
 	typemenu.appendChild(document.createTextNode("Type"));
+	menu.appendChild(gamemenu);
 	menu.appendChild(typemenu);
+	gamemenu.onclick = choose_game;
 	typemenu.onclick = choose_type;
 }
 

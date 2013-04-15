@@ -250,9 +250,17 @@ static void pick_preset(void)
 }
 */
 
+void c_callback(const char *name,int id,int sel);
+void populate_game_menu()
+{
+	int i;
+	for(i=0;i<gamecount;i++) {
+		c_callback(gamelist[i]->name, i, 0);
+	}
+}
+
 void populate_type_menu()
 {
-	void c_callback(char *name,int id,int sel);
 	int num = midend_num_presets(fe->me);
 	int i;
 	int sel = midend_which_preset(fe->me);
@@ -316,6 +324,15 @@ void em_puzzle_init(void)
 	snaffle_colours(fe);
 
 	/*pick_preset();*/
+	em_new_game();
+}
+
+void change_game(int id)
+{
+	midend_free(fe->me);
+	fe->game = gamelist[id];
+	fe->me = midend_new(fe, fe->game, &drapi, fe);
+	snaffle_colours(fe);
 	em_new_game();
 }
 
