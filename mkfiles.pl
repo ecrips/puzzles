@@ -1695,7 +1695,7 @@ if (defined $makefiles{'emscripten'}) {
 	  " -c \$< -o \$\@\n";
     }
 
-    print "cache.manifest: puzzle.html Puzzles.js web-icons/*.png\n";
+    print "cache.manifest: puzzle.html Puzzles.js web-icons/[A-Z]*.png\n";
     print "\techo CACHE MANIFEST > cache.new\n";
     print "\t".'md5sum $+ | sed "s/\(.*\) \(.*\)/\2 # \1/" >> cache.new'."\n";
     print "\tmv cache.new cache.manifest\n";

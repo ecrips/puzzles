@@ -30,7 +30,7 @@ function mouseup(e) {
 	return false;
 }
 
-function do_menu(callback, populate) {
+function do_menu(o, callback, populate) {
 	var menu = document.createElement("div");
 	menu.className = "ontopmenu";
 	var list = document.createElement("div");
@@ -44,9 +44,10 @@ function do_menu(callback, populate) {
 		}
 	}
 
-	var o = {list: list, hide_menu: hide_menu};
+	o.list = list;
+	o.hide_menu = hide_menu;
 
-	set_callback(callback.bind(o));
+	set_callback(callback);
 	populate();
 
 	document.body.appendChild(menu);
@@ -60,8 +61,9 @@ function do_menu(callback, populate) {
 }
 
 function choose_game() {
-	do_menu(function(name, i) {
-		var hide_menu = this.hide_menu;
+	var o = {};
+	do_menu(o, function(name, i) {
+		var hide_menu = o.hide_menu;
 		name = Pointer_stringify(name);
 		var div = document.createElement("div");
 		var radio = document.createElement("input");
@@ -74,7 +76,7 @@ function choose_game() {
 		label.appendChild(radio);
 		label.appendChild(document.createTextNode(name));
 		div.appendChild(label);
-		this.list.appendChild(div);
+		o.list.appendChild(div);
 		label.onclick = function() {
 			hide_menu();
 			location.hash = name;
@@ -84,8 +86,9 @@ function choose_game() {
 }
 
 function choose_type() {
-	do_menu(function(name, i, sel) {
-		var hide_menu = this.hide_menu;
+	var o = {};
+	do_menu(o, function(name, i, sel) {
+		var hide_menu = o.hide_menu;
 		name = Pointer_stringify(name);
 		var div = document.createElement("div");
 		var radio = document.createElement("input");
@@ -96,7 +99,7 @@ function choose_type() {
 		label.appendChild(radio);
 		label.appendChild(document.createTextNode(name));
 		div.appendChild(label);
-		this.list.appendChild(div);
+		o.list.appendChild(div);
 		label.onclick = function() {
 			hide_menu();
 			_set_preset(i);
