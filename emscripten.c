@@ -60,6 +60,10 @@ static void em_draw_text(void *handle, int x, int y, int fonttype, int fontsize,
 			alignstr = "center";
 			valignstr = "middle";
 			break;
+		case ALIGN_VCENTRE:
+			alignstr = "left";
+			valignstr = "middle";
+			break;
 		default:
 			printf("Unknown text alignment (%d)\n", align);
 	}
