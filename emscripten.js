@@ -224,11 +224,6 @@ function _canvas_clip(x, y, w, h)
 function _canvas_unclip()
 {
 	ctx.restore();
-	/*
-	ctx.beginPath();
-	ctx.rect(0,0,thecanvas.width,thecanvas.height);
-	ctx.clip();
-	*/
 	//ctx.resetClip();
 }
 
@@ -283,8 +278,40 @@ function _activate_timer()
 function _deactivate_timer()
 {
 	timer_active = false;
-
 }
+
+var saved_state;
+
+function _save_state_reset()
+{
+	window.localStorage.setItem("state", "");
+	saved_state = '';
+}
+
+function _save_state_add(str)
+{
+	str = Pointer_stringify(str);
+	saved_state += str;
+}
+
+function _save_state_save()
+{
+	window.localStorage.setItem("state", saved_state);
+}
+
+function _load_state()
+{
+	saved_state = window.localStorage.getItem("state") || "";
+}
+
+function _load_state_read(ctx, ptr, len)
+{
+	if (len > saved_state.length) return false;
+	writeStringToMemory(saved_state.substr(0, len), ptr, true);
+	saved_state = saved_state.substr(len);
+	return true;
+}
+
 window['em'] = {
 	'puzzle_init' : puzzle_init
 };

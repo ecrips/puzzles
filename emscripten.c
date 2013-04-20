@@ -25,11 +25,30 @@ void canvas_lineTo(int,int);
 void canvas_strokeandfill(int,int);
 int is_selected_game(const char*);
 
+void save_state_reset(void);
+void save_state_add(char *str);
+void save_state_save(void);
+
+void load_state(void);
+int load_state_read(void *ctx, void *buf, int len);
+
 struct frontend
 {
 	midend *me;
 	const game *game;
 };
+
+void save_state_callback(void *ctx, void *buf, int len)
+{
+	save_state_add(buf);
+}
+
+void save_state(void)
+{
+	save_state_reset();
+	midend_serialise(fe->me, save_state_callback, NULL);
+	save_state_save();
+}
 
 static void em_draw_text(void *handle, int x, int y, int fonttype, int fontsize,
 	int align, int colour, char *text)
@@ -234,6 +253,17 @@ static const game *pick_game(void)
 	return gamelist[0];
 }
 
+static const game *find_game(char *name)
+{
+	int i;
+	for(i=0;i<gamecount;i++) {
+		if (!strcmp(name, gamelist[i]->name)) {
+			return gamelist[i];
+		}
+	}
+	return NULL;
+}
+
 /*
 static void pick_preset(void)
 {
@@ -272,13 +302,17 @@ void populate_type_menu()
 	}
 }
 
-void em_new_game(void)
+void em_new_game(int start_new)
 {
 	int x = get_width(),y = get_height();
-	midend_new_game(fe->me);
+	if (start_new) {
+		midend_new_game(fe->me);
+	}
 	midend_size(fe->me, &x, &y, 1);
 	set_canvas_size(x,y);
 	midend_redraw(fe->me);
+
+	save_state();
 }
 
 void set_preset(int i)
@@ -288,7 +322,7 @@ void set_preset(int i)
 	midend_fetch_preset(fe->me, i, &name, &params);
 	midend_set_params(fe->me, params);
 
-	em_new_game();
+	em_new_game(1);
 }
 
 void frontend_default_colour(frontend *fe, float *output)
@@ -313,18 +347,38 @@ void snaffle_colours(frontend *fe)
 
 void em_puzzle_init(void)
 {
+	char *game;
+	char *err;
+
 	fe = snew(frontend);
 
 	memset(fe, 0, sizeof(*fe));
 
-	fe->game = pick_game();
+	load_state();
+	err = identify_game(&game, load_state_read, NULL);
+	if (game) {
+		fe->game = find_game(game);
+	} else {
+		printf("%s\n", err);
+	}
+	if (!fe->game) {
+		fe->game = pick_game();
+		game = NULL;
+	}
 
 	fe->me = midend_new(fe, fe->game, &drapi, fe);
 
 	snaffle_colours(fe);
 
-	/*pick_preset();*/
-	em_new_game();
+	if (game) {
+		load_state();
+		err = midend_deserialise(fe->me, load_state_read, NULL);
+		if (err) {
+			printf("%s\n", err);
+		}
+	}
+
+	em_new_game(game==NULL);
 }
 
 void change_game(int id)
@@ -333,7 +387,7 @@ void change_game(int id)
 	fe->game = gamelist[id];
 	fe->me = midend_new(fe, fe->game, &drapi, fe);
 	snaffle_colours(fe);
-	em_new_game();
+	em_new_game(1);
 }
 
 void get_random_seed(void **randseed, int *randseedsize)
@@ -383,6 +437,8 @@ void em_mouseup(int x, int y, int which)
 		return;
 	midend_process_key(fe->me, x, y, button);
 	button_drag_down = 0;
+
+	save_state();
 }
 
 void do_timer(int t)
