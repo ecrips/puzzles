@@ -65,16 +65,17 @@ function choose_game() {
 	do_menu(o, function(name, i) {
 		var hide_menu = o.hide_menu;
 		name = Pointer_stringify(name);
-		var div = document.createElement("div");
-		var radio = document.createElement("input");
-		radio.type = "radio";
-		radio.name = 'game';
+		var div = document.createElement("span");
+		div.className = "gamemenuitem";
 		var label = document.createElement("label");
 		var img = document.createElement("img");
 		img.src = "web-icons/"+name+".png";
 		label.appendChild(img);
-		label.appendChild(radio);
-		label.appendChild(document.createTextNode(name));
+		label.appendChild(document.createElement("br"));
+		var namediv = document.createElement("div");
+		namediv.appendChild(document.createTextNode(name));
+		namediv.style['text-align'] = "center";
+		label.appendChild(namediv);
 		div.appendChild(label);
 		o.list.appendChild(div);
 		label.onclick = function() {
@@ -125,6 +126,7 @@ function puzzle_init() {
 	thecanvas.ontouchstart = thecanvas.onmousedown = mousedown;
 	thecanvas.ontouchmove = thecanvas.onmousemove = mousemove;
 	thecanvas.ontouchend = thecanvas.onmouseup = mouseup;
+	thecanvas.oncontextmenu = function() {return false;};
 	_em_puzzle_init();
 	setup_menu();
 }
