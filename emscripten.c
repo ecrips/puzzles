@@ -466,3 +466,8 @@ void em_redo(void)
 	midend_process_key(fe->me, 0, 0, 'r');
 	save_state();
 }
+
+int em_status(void)
+{
+	return midend_status(fe->me);
+}

@@ -60,6 +60,15 @@ function do_menu(o, callback, populate) {
 	}
 }
 
+function start_newgame() {
+	var stat = _em_status();
+	if (stat == 0) {
+		var c = confirm("Are you sure you want to start a new game?");
+		if (!c) return;
+	}
+	_em_new_game(1);
+}
+
 function choose_game() {
 	var o = {};
 	do_menu(o, function(name, i) {
@@ -118,10 +127,12 @@ function setup_menu() {
 		menu.appendChild(b);
 		return b;
 	}
+	var newgamemenu = createButton("New Game");
 	var gamemenu = createButton("Game");
 	var typemenu = createButton("Type");
 	var undo = createButton("Undo");
 	var redo = createButton("Redo");
+	newgamemenu.onclick = start_newgame;
 	gamemenu.onclick = choose_game;
 	typemenu.onclick = choose_type;
 	undo.onclick = _em_undo;
@@ -130,7 +141,7 @@ function setup_menu() {
 	_set_undo_redo = function(u, r) {
 		undo.disabled = !u;
 		redo.disabled = !r;
-	}
+	};
 }
 
 
@@ -143,6 +154,10 @@ function puzzle_init() {
 	thecanvas.ontouchend = thecanvas.onmouseup = mouseup;
 	thecanvas.oncontextmenu = function() {return false;};
 	_em_puzzle_init();
+
+	window.onresize = function() {
+		_em_new_game(0);
+	};
 }
 
 function _is_selected_game(game) {
