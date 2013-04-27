@@ -32,6 +32,8 @@ void save_state_save(void);
 void load_state(void);
 int load_state_read(void *ctx, void *buf, int len);
 
+void set_undo_redo(int, int);
+
 struct frontend
 {
 	midend *me;
@@ -48,6 +50,8 @@ void save_state(void)
 	save_state_reset();
 	midend_serialise(fe->me, save_state_callback, NULL);
 	save_state_save();
+
+	set_undo_redo(midend_can_undo(fe->me), midend_can_redo(fe->me));
 }
 
 static void em_draw_text(void *handle, int x, int y, int fonttype, int fontsize,
@@ -449,4 +453,16 @@ void do_timer(int t)
 {
 	float tplus = t/1000.f;
 	midend_timer(fe->me, tplus);
+}
+
+void em_undo(void)
+{
+	midend_process_key(fe->me, 0, 0, 'u');
+	save_state();
+}
+
+void em_redo(void)
+{
+	midend_process_key(fe->me, 0, 0, 'r');
+	save_state();
 }

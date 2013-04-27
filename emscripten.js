@@ -108,19 +108,34 @@ function choose_type() {
 	}, _populate_type_menu);
 }
 
+var _set_undo_redo;
+
 function setup_menu() {
 	var menu = document.getElementById("menu");
-	var gamemenu = document.createElement("button");
-	var typemenu = document.createElement("button");
-	gamemenu.appendChild(document.createTextNode("Game"));
-	typemenu.appendChild(document.createTextNode("Type"));
-	menu.appendChild(gamemenu);
-	menu.appendChild(typemenu);
+	function createButton(text) {
+		var b = document.createElement("button");
+		b.appendChild(document.createTextNode(text));
+		menu.appendChild(b);
+		return b;
+	}
+	var gamemenu = createButton("Game");
+	var typemenu = createButton("Type");
+	var undo = createButton("Undo");
+	var redo = createButton("Redo");
 	gamemenu.onclick = choose_game;
 	typemenu.onclick = choose_type;
+	undo.onclick = _em_undo;
+	redo.onclick = _em_redo;
+
+	_set_undo_redo = function(u, r) {
+		undo.disabled = !u;
+		redo.disabled = !r;
+	}
 }
 
+
 function puzzle_init() {
+	setup_menu();
 	thecanvas = document.getElementById("canvas");
 	ctx = thecanvas.getContext('2d');
 	thecanvas.ontouchstart = thecanvas.onmousedown = mousedown;
@@ -128,7 +143,6 @@ function puzzle_init() {
 	thecanvas.ontouchend = thecanvas.onmouseup = mouseup;
 	thecanvas.oncontextmenu = function() {return false;};
 	_em_puzzle_init();
-	setup_menu();
 }
 
 function _is_selected_game(game) {
