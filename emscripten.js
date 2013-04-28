@@ -11,22 +11,54 @@ function set_callback(c) {
 
 var hide_menu = function() {};
 
+var touch_progress = {'waiting_for_down': false};
+
 function mousedown(e) {
 	hide_menu();
-	if (e.touches) e = e.targetTouches[0];
-	_em_mousedown(e.clientX - thecanvas.offsetLeft,
-		e.clientY - thecanvas.offsetTop, e.which-1);
+	if (e.touches) {
+		if (e.touches) e = e.targetTouches[0];
+		var x = e.clientX - thecanvas.offsetLeft;
+		var y = e.clientY - thecanvas.offsetTop;
+		var o = {};
+		o.waiting_for_down = true;
+		o.x = x;
+		o.y = y;
+		touch_progress = o;
+		setTimeout(function() {
+			if (touch_progress !== o) return;
+			if (touch_progress.waiting_for_down) {
+				// Right click
+				_em_mousedown(x, y, 2);
+				touch_progress.waiting_for_down = false;
+			}
+		}, 500);
+	} else {
+		_em_mousedown(e.clientX - thecanvas.offsetLeft,
+			e.clientY - thecanvas.offsetTop, e.which-1);
+	}
 	return false;
 }
 
 function mousemove(e) {
-	if (e.touches) e = e.targetTouches[0];
+	if (e.touches) {
+		if (e.touches) e = e.targetTouches[0];
+		if (touch_progress && touch_progress.waiting_for_down) {
+			// Left click
+			_em_mousedown(touch_progress.x, touch_progress.y, 0);
+			touch_progress.waiting_for_down = false;
+		}
+	}
 	_em_mousemove(e.clientX - thecanvas.offsetLeft,
 		e.clientY - thecanvas.offsetTop);
 	return false;
 }
 
 function mouseup(e) {
+	if (touch_progress && touch_progress.waiting_for_down) {
+		// Left click
+		_em_mousedown(touch_progress.x, touch_progress.y, 0);
+	}
+	touch_progress = null;
 	if (e.touches) e = e.changedTouches[0];
 	_em_mouseup(e.clientX - thecanvas.offsetLeft,
 		e.clientY - thecanvas.offsetTop, e.which-1);
