@@ -455,16 +455,18 @@ void do_timer(int t)
 	midend_timer(fe->me, tplus);
 }
 
-void em_undo(void)
+int em_undo(void)
 {
 	midend_process_key(fe->me, 0, 0, 'u');
 	save_state();
+	return 0;
 }
 
-void em_redo(void)
+int em_redo(void)
 {
 	midend_process_key(fe->me, 0, 0, 'r');
 	save_state();
+	return 0;
 }
 
 int em_status(void)

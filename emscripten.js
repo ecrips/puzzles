@@ -9,7 +9,10 @@ function set_callback(c) {
 	current_callback = c;
 }
 
+var hide_menu = function() {};
+
 function mousedown(e) {
+	hide_menu();
 	if (e.touches) e = e.targetTouches[0];
 	_em_mousedown(e.clientX - thecanvas.offsetLeft,
 		e.clientY - thecanvas.offsetTop, e.which-1);
@@ -37,7 +40,7 @@ function do_menu(o, callback, populate) {
 	menu.appendChild(list);
 	var menu_visible = true;
 
-	function hide_menu() {
+	hide_menu = function() {
 		if (menu_visible) {
 			document.body.removeChild(menu);
 			menu_visible=false;
@@ -45,7 +48,6 @@ function do_menu(o, callback, populate) {
 	}
 
 	o.list = list;
-	o.hide_menu = hide_menu;
 
 	set_callback(callback);
 	populate();
@@ -67,12 +69,12 @@ function start_newgame() {
 		if (!c) return;
 	}
 	_em_new_game(1);
+	return false;
 }
 
 function choose_game() {
 	var o = {};
 	do_menu(o, function(name, i) {
-		var hide_menu = o.hide_menu;
 		name = Pointer_stringify(name);
 		var div = document.createElement("span");
 		div.className = "gamemenuitem";
@@ -93,12 +95,12 @@ function choose_game() {
 			_change_game(i);
 		};
 	}, _populate_game_menu);
+	return false;
 }
 
 function choose_type() {
 	var o = {};
 	do_menu(o, function(name, i, sel) {
-		var hide_menu = o.hide_menu;
 		name = Pointer_stringify(name);
 		var div = document.createElement("div");
 		var radio = document.createElement("input");
@@ -115,6 +117,7 @@ function choose_type() {
 			_set_preset(i);
 		};
 	}, _populate_type_menu);
+	return false;
 }
 
 var _set_undo_redo;
@@ -132,11 +135,11 @@ function setup_menu() {
 	var typemenu = createButton("Type");
 	var undo = createButton("Undo");
 	var redo = createButton("Redo");
-	newgamemenu.onclick = start_newgame;
-	gamemenu.onclick = choose_game;
-	typemenu.onclick = choose_type;
-	undo.onclick = _em_undo;
-	redo.onclick = _em_redo;
+	newgamemenu.ontouchstart = newgamemenu.onmousedown = start_newgame;
+	gamemenu.ontouchstart = gamemenu.onmousedown = choose_game;
+	typemenu.ontouchstart = typemenu.onmousedown = choose_type;
+	undo.ontouchstart = undo.onmousedown = _em_undo;
+	redo.ontouchstart = redo.onmousedown = _em_redo;
 
 	_set_undo_redo = function(u, r) {
 		undo.disabled = !u;
