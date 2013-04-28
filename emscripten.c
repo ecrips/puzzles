@@ -83,7 +83,10 @@ static void em_draw_rect(void *handle, int x, int y, int w, int h, int colour)
 static void em_draw_line(void *hande, int x1, int y1, int x2, int y2,
 			int colour)
 {
-	printf("TODO: draw line\n");
+	canvas_beginPath();
+	canvas_moveTo(x1, y1);
+	canvas_lineTo(x2, y2);
+	canvas_strokeandfill(-1, colour);
 }
 
 static void em_draw_polygon(void *handle, int *coords, int npoints,
