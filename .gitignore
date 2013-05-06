@@ -1,0 +1,5 @@
+*.swp
+Makefile*
+list.c
+tags
+wingames.lst
