@@ -383,18 +383,12 @@ function _load_state_read(ctx, ptr, len)
 
 function _set_status_bar(text)
 {
-	var had_status = thestatus.childNodes.length > 0;
 	while (thestatus.childNodes.length > 0) {
 		thestatus.removeChild(thestatus.childNodes[0]);
 	}
 	if (text != 0) {
 		var e = document.createTextNode(Pointer_stringify(text));
 		thestatus.appendChild(e);
-		if (!had_status) {
-			_em_new_game(0);
-		}
-	} else if (had_status) {
-		_em_new_game(0);
 	}
 }
 

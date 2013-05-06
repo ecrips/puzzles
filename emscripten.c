@@ -320,7 +320,11 @@ void em_new_game(int start_new)
 	int x, y;
 	if (start_new) {
 		midend_new_game(fe->me);
-		set_status_bar(NULL);
+		if (midend_wants_statusbar(fe->me)) {
+			set_status_bar(".");
+		} else {
+			set_status_bar(NULL);
+		}
 	}
 	x = get_width();
 	y = get_height();
