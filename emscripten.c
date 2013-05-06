@@ -317,10 +317,13 @@ void populate_type_menu()
 
 void em_new_game(int start_new)
 {
-	int x = get_width(),y = get_height();
+	int x, y;
 	if (start_new) {
 		midend_new_game(fe->me);
+		set_status_bar(NULL);
 	}
+	x = get_width();
+	y = get_height();
 	midend_size(fe->me, &x, &y, 1);
 	set_canvas_size(x,y);
 	midend_redraw(fe->me);

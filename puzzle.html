@@ -4,7 +4,7 @@
 <link rel="apple-touch-icon" href="web-icons/Bridges.png" />
 <title>Puzzles</title>
 <style>
-body {margin: 0px;}
+body {margin: 0px;background: white;padding: 0px;}
 #menu {height: 25px;font-size: 20px;}
 .ontopmenu {position: absolute;
 	top:25px;
@@ -15,6 +15,11 @@ body {margin: 0px;}
 }
 .gamemenuitem {display: inline-block;
 		padding: 5px;
+}
+#status {position: absolute;
+	bottom: 0px;
+	padding: 0px;
+	margin: 0px;
 }
 #canvas {}
 </style>
@@ -28,5 +33,6 @@ window.onload = function() {
 <body>
 <div id="menu"></div>
 <canvas id="canvas"></canvas>
+<div id="status"></div>
 </body>
 </html>

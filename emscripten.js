@@ -1,4 +1,5 @@
 var thecanvas, ctx;
+var thestatus;
 var colourStyle = {};
 
 var current_callback;
@@ -72,6 +73,7 @@ function do_menu(o, callback, populate) {
 	menu.appendChild(list);
 	var menu_visible = true;
 
+	hide_menu(); // Ensure any previous menu is hidden
 	hide_menu = function() {
 		if (menu_visible) {
 			document.body.removeChild(menu);
@@ -183,6 +185,7 @@ function setup_menu() {
 function puzzle_init() {
 	setup_menu();
 	thecanvas = document.getElementById("canvas");
+	thestatus = document.getElementById("status");
 	ctx = thecanvas.getContext('2d');
 	thecanvas.ontouchstart = thecanvas.onmousedown = mousedown;
 	thecanvas.ontouchmove = thecanvas.onmousemove = mousemove;
@@ -222,7 +225,7 @@ function _get_width()
 
 function _get_height()
 {
-	return window.innerHeight - thecanvas.offsetTop;
+	return window.innerHeight - thecanvas.offsetTop - thestatus.clientHeight;
 }
 
 function _canvas_text(x, y, fonttype, fontsize,
@@ -380,7 +383,19 @@ function _load_state_read(ctx, ptr, len)
 
 function _set_status_bar(text)
 {
-	window.status = Pointer_stringify(text);
+	var had_status = thestatus.childNodes.length > 0;
+	while (thestatus.childNodes.length > 0) {
+		thestatus.removeChild(thestatus.childNodes[0]);
+	}
+	if (text != 0) {
+		var e = document.createTextNode(Pointer_stringify(text));
+		thestatus.appendChild(e);
+		if (!had_status) {
+			_em_new_game(0);
+		}
+	} else if (had_status) {
+		_em_new_game(0);
+	}
 }
 
 window['em'] = {
