@@ -34,6 +34,8 @@ int load_state_read(void *ctx, void *buf, int len);
 
 void set_undo_redo(int, int);
 
+void set_status_bar(char *);
+
 struct frontend
 {
 	midend *me;
@@ -131,7 +133,7 @@ static void em_end_draw(void *handle)
 
 static void em_status_bar(void *handle, char *text)
 {
-	printf("TODO: status bar\n");
+	set_status_bar(text);
 }
 
 struct blitter
@@ -338,9 +340,9 @@ void set_preset(int i)
 
 void frontend_default_colour(frontend *fe, float *output)
 {
-	output[0] = 1;
-	output[1] = 1;
-	output[2] = 1;
+	output[0] = 0.8f;
+	output[1] = 0.8f;
+	output[2] = 0.8f;
 }
 
 void snaffle_colours(frontend *fe)

@@ -170,8 +170,8 @@ function setup_menu() {
 	newgamemenu.ontouchstart = newgamemenu.onmousedown = start_newgame;
 	gamemenu.ontouchstart = gamemenu.onmousedown = choose_game;
 	typemenu.ontouchstart = typemenu.onmousedown = choose_type;
-	undo.ontouchstart = undo.onmousedown = _em_undo;
-	redo.ontouchstart = redo.onmousedown = _em_redo;
+	undo.ontouchstart = undo.onmousedown = function() {_em_undo();return false;};
+	redo.ontouchstart = redo.onmousedown = function() {_em_redo();return false;};
 
 	_set_undo_redo = function(u, r) {
 		undo.disabled = !u;
@@ -376,6 +376,11 @@ function _load_state_read(ctx, ptr, len)
 	writeStringToMemory(saved_state.substr(0, len), ptr, true);
 	saved_state = saved_state.substr(len);
 	return true;
+}
+
+function _set_status_bar(text)
+{
+	window.status = Pointer_stringify(text);
 }
 
 window['em'] = {
