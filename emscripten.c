@@ -21,7 +21,7 @@ void canvas_clip(int,int,int,int);
 void canvas_unclip(void);
 void canvas_beginPath(void);
 void canvas_moveTo(int,int);
-void canvas_lineTo(int,int);
+void canvas_lineTo(int,int,float);
 void canvas_strokeandfill(int,int);
 int is_selected_game(const char*);
 
@@ -87,7 +87,7 @@ static void em_draw_line(void *hande, int x1, int y1, int x2, int y2,
 {
 	canvas_beginPath();
 	canvas_moveTo(x1, y1);
-	canvas_lineTo(x2, y2);
+	canvas_lineTo(x2, y2, 1);
 	canvas_strokeandfill(-1, colour);
 }
 
@@ -98,7 +98,7 @@ static void em_draw_polygon(void *handle, int *coords, int npoints,
 	canvas_beginPath();
 	canvas_moveTo(coords[0], coords[1]);
 	for(i=1;i<npoints;i++) {
-		canvas_lineTo(coords[i*2], coords[i*2+1]);
+		canvas_lineTo(coords[i*2], coords[i*2+1], 1);
 	}
 	canvas_strokeandfill(fillcolour, outlinecolour);
 }
@@ -224,7 +224,10 @@ static void em_draw_thick_line(void *handle, float thickness,
 			    float x1, float y1, float x2, float y2,
 			    int colour)
 {
-	printf("TODO: draw thick line\n");
+	canvas_beginPath();
+	canvas_moveTo(x1, y1);
+	canvas_lineTo(x2, y2, thickness);
+	canvas_strokeandfill(-1, colour);
 }
 
 static struct drawing_api drapi = {

@@ -234,7 +234,7 @@ function _canvas_text(x, y, fonttype, fontsize,
 	alignstr = Pointer_stringify(alignstr);
 	valignstr = Pointer_stringify(valignstr);
 	text = Pointer_stringify(text);
-	var font = "bold " + fontsize + " px";
+	var font = "bold " + fontsize + "px";
 	if (fonttype == 1) {
 		font += " monospace";
 	} else {
@@ -306,8 +306,9 @@ function _canvas_moveTo(x, y)
 	ctx.moveTo(x,y);
 }
 
-function _canvas_lineTo(x, y)
+function _canvas_lineTo(x, y, w)
 {
+	ctx.lineWidth = w;
 	ctx.lineTo(x,y);
 }
 
