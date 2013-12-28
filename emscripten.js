@@ -256,10 +256,13 @@ function _canvas_rect(x, y, w, h, colour)
 
 function _canvas_circle(x, y, radius, fillcolour, outlinecolour)
 {
+	ctx.lineWidth = "1";
+	ctx.lineCap = "round";
+	ctx.lineJoin = "round";
 	ctx.fillStyle = colourStyle[fillcolour];
 	ctx.strokeStyle = colourStyle[outlinecolour];
 	ctx.beginPath();
-	ctx.arc(x, y, radius, 0, Math.PI*2, true);
+	ctx.arc(x+0.5, y+0.5, radius, 0, Math.PI*2, true);
 	ctx.stroke();
 	ctx.fill();
 }
