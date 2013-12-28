@@ -110,11 +110,12 @@ function choose_game() {
 	var o = {};
 	do_menu(o, function(name, i) {
 		name = Pointer_stringify(name);
+		var nospacename = name.replace(" ","");
 		var div = document.createElement("span");
 		div.className = "gamemenuitem";
 		var label = document.createElement("label");
 		var img = document.createElement("img");
-		img.src = "web-icons/"+name+".png";
+		img.src = "web-icons/"+nospacename+".png";
 		label.appendChild(img);
 		label.appendChild(document.createElement("br"));
 		var namediv = document.createElement("div");
