@@ -45,7 +45,11 @@ function mousemove(e) {
 		if (e.touches) e = e.targetTouches[0];
 		if (touch_progress && touch_progress.waiting_for_down) {
 			// Left click
-			_em_mousedown(touch_progress.x, touch_progress.y, 0);
+			try {
+				_em_mousedown(touch_progress.x, touch_progress.y, 0);
+			} catch (e) {
+				alert(e);
+			}
 			touch_progress.waiting_for_down = false;
 		}
 	}
@@ -57,7 +61,11 @@ function mousemove(e) {
 function mouseup(e) {
 	if (touch_progress && touch_progress.waiting_for_down) {
 		// Left click
-		_em_mousedown(touch_progress.x, touch_progress.y, 0);
+		try {
+			_em_mousedown(touch_progress.x, touch_progress.y, 0);
+		} catch (e) {
+			alert(e);
+		}
 	}
 	touch_progress = null;
 	if (e.touches) e = e.changedTouches[0];

@@ -1680,7 +1680,7 @@ if (defined $makefiles{'emscripten'}) {
       $objstr =~ s/osx\.em\.o/emscripten\.em\.o/;
       print &splitline("\$(BINPREFIX)" . $prog . ".js: emscripten.js emscripten-pre.js " . $objstr), "\n";
       $libstr = &objects($p, undef, undef, "-lX");
-      print &splitline("\tEMCC_CLOSURE_ARGS=\"--compilation_level SIMPLE_OPTIMIZATIONS\" \$(CC) -o \$@ $objstr $libstr --jcache --post-js emscripten.js --pre-js emscripten-pre.js -O2", 69),
+      print &splitline("\tEMCC_CLOSURE_ARGS=\"--compilation_level SIMPLE_OPTIMIZATIONS\" \$(CC) -s ALLOW_MEMORY_GROWTH=1 -o \$@ $objstr $libstr --jcache --post-js emscripten.js --pre-js emscripten-pre.js -O2", 69),
 	  "\n\n";
     }
     foreach $d (&deps("X.em.o", undef, $dirpfx, "/")) {
