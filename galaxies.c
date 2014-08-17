@@ -2438,7 +2438,7 @@ static char *interpret_move(const game_state *state, game_ui *ui,
         return ret;
     }
 
-    if (button == LEFT_BUTTON) {
+    if (button == LEFT_RELEASE) {
         ui->cur_visible = 0;
         coord_round_to_edge(FROMCOORD((float)x), FROMCOORD((float)y),
                             &px, &py);
@@ -2538,8 +2538,16 @@ static char *interpret_move(const game_state *state, game_ui *ui,
 	 */
 	if ((ui->srcx != ui->dotx || ui->srcy != ui->doty) &&
 	    SPACE(state, ui->srcx, ui->srcy).flags & F_TILE_ASSOC) {
+            int ox = ui->dotx * 2 - ui->srcx;
+            int oy = ui->doty * 2 - ui->srcy;
+
 	    sprintf(buf + strlen(buf), "%sU%d,%d", sep, ui->srcx, ui->srcy);
 	    sep = ";";
+            if (INUI(state, ox, oy) &&
+                SPACE(state, ox, oy).flags & F_TILE_ASSOC) {
+
+                sprintf(buf + strlen(buf), "%sU%d,%d", sep, ox, oy);
+            }
 	}
 
 	/*
@@ -2549,9 +2557,21 @@ static char *interpret_move(const game_state *state, game_ui *ui,
         if (INUI(state, px, py)) {
             sp = &SPACE(state, px, py);
 
-            if (!(sp->flags & F_DOT) && !(sp->flags & F_TILE_ASSOC))
+            if (!(sp->flags & F_DOT) && !(sp->flags & F_TILE_ASSOC)) {
+                int ox = ui->dotx * 2 - px;
+                int oy = ui->doty * 2 - py;
+
 		sprintf(buf + strlen(buf), "%sA%d,%d,%d,%d",
 			sep, px, py, ui->dotx, ui->doty);
+
+                if (INUI(state, ox, oy)) {
+                    sp = &SPACE(state, ox, oy);
+                    if (!(sp->flags & F_DOT) && !(sp->flags & F_TILE_ASSOC)) {
+                        sprintf(buf + strlen(buf), ";A%d,%d,%d,%d",
+                                ox, oy, ui->dotx, ui->doty);
+                    }
+                }
+            }
 	}
 
 	if (buf[0])
